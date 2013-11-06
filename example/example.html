@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+	<head>
+	<script src="../build/build.js"></script>
+	<style>
+	body {
+		height: 2399.031px;
+	}
+	#nav {
+		height: 100px;
+		background: white;
+		width: 100%;
+	}
+	#nav.fixed {
+		background: red;
+		position: fixed;
+		top: 0px;
+		left: 0px;
+	}
+	</style>
+	<script>
+		function start(){
+			console.log('start!')
+			var nav = document.getElementById("nav")
+			var spy = require('scrollyspy')(window)
+			spy
+				.add(nav, 0)
+				.enter(function() {
+					console.log('in enter')
+					nav.setAttribute('class', 'fixed')
+				})
+				.leave(function(){
+					nav.setAttribute('class', '')
+				}).end()
+				.start()
+
+
+		}
+	</script>
+	</head>
+	<body onload="start();">
+		<div id="nav">hi bar</div>
+		<div id="content">hola bitches!</div>
+	</body>
+</html>

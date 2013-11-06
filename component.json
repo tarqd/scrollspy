@@ -1,0 +1,22 @@
+{
+  "name": "scrollyspy",
+  "repo": "ilsken/scrollspy",
+  "description": "Affixes an element to the top of hte page after scroll\u001b[D\u001b[D\u001b[D\u001b[D",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "anthonyshort/offset": "*",
+    "component/event": "*",
+    "component/raf": "*",
+    "component/bind": "*",
+    "component/emitter": "*",
+    "component/throttle": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ],
+  "remotes": []
+}
