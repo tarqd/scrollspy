@@ -2,8 +2,6 @@ var offset  = require('offset')
   , event   = require('event')
   , raf     = require('raf')
   , bind    = require('bind')
-  , emitter = require('emitter')
-  , throttle = require('throttle')
   , spy     = ScrollSpy.prototype
   , handler   = ScrollHandler.prototype
   , immediate = require('immediate')
@@ -19,12 +17,10 @@ function ScrollSpy(element) {
   this.running = false
   this.raf = false;
   this.listeners = []
-  
 }
-emitter(spy)
-spy.start = function(delay) {
+
+spy.start = function() {
   if (this.running) this.stop();
-  this.queue = delay === undefined ? bind(null, raf) : function(fn) { return setTimeout(fn, delay) } 
   event.bind(this.el, 'scroll', this.scrollHandler)
   this.running = true
   return this
@@ -53,6 +49,9 @@ spy.remove = function(element, topOffset, leftOffset) {
   return this
 }
 
+spy.enter = enter
+spy.leave = leave
+
 
 function ScrollHandler(spy, element, topOffset, leftOffset) {
   this.el = element
@@ -61,7 +60,7 @@ function ScrollHandler(spy, element, topOffset, leftOffset) {
   this.leftOffset = leftOffset || undefined
   this.fixed = 0
 }
-emitter(handler)
+
 handler.offset = function(topOffset, leftOffset) {
   if (arguments.length == 0) return {top: this.topOffset, left: this.leftOffset}
   else {
@@ -84,15 +83,9 @@ handler.leave = leave
  * utility functions
  */ 
 function scrollHandler() {
- // console.log('raf', this.raf)
   if (this.raf === false) this.raf = raf(this.dispatch)
 }
 
-function scrollLoop() {
-  this.raf = raf(this.scrollLoop)
-  if (this.scrolled) 
-    this.dispatch();  
-}
 
 function dispatch() {
   var length = this.listeners.length
@@ -138,8 +131,8 @@ function dispatch() {
 
 function exec(listener, enter, leave) {
   immediate(function(){
-    if (enter && listener.enter_) listener.enter_.call(listener.el, listener.is_top, listener.is_left)
-    if (leave && listener.leave_) listener.leave_.call(listener.el, listener.is_left, listener.is_left)  
+    if (enter && (enter = listener.enter_ || listener.spy.enter_)) enter.call(listener.el, listener.is_top, listener.is_left)
+    if (leave && (leave = listener.leave_ || listener.spy.leave_)) leave.call(listener.el, listener.is_left, listener.is_left)  
   })
   
 }
