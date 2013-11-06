@@ -1,7 +1,7 @@
 
-# affix
+# Scroll Spy Component
 
-  Affixes an element to the top of hte page after scroll[D[D[D[D
+  Listen for scroll events on a window, document, or element and execute callbacks when child elements scroll in or out of view (see `example/example.html`)
 
 ## Installation
 
