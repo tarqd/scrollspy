@@ -1,5 +1,5 @@
 {
-  "name": "scrollyspy",
+  "name": "scrollspy",
   "repo": "ilsken/scrollspy",
   "description": "Affixes an element to the top of hte page after scroll\u001b[D\u001b[D\u001b[D\u001b[D",
   "version": "0.0.1",
@@ -10,7 +10,8 @@
     "component/raf": "*",
     "component/bind": "*",
     "component/emitter": "*",
-    "component/throttle": "*"
+    "component/throttle": "*",
+    "ilsken/immediate": "*"
   },
   "development": {},
   "license": "MIT",
