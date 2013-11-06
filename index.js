@@ -6,6 +6,7 @@ var offset  = require('offset')
   , throttle = require('throttle')
   , spy     = ScrollSpy.prototype
   , handler   = ScrollHandler.prototype
+  , immediate = require('immediate')
   , exports = module.exports = ScrollSpy
 
 function ScrollSpy(element) {
@@ -15,17 +16,22 @@ function ScrollSpy(element) {
   this.dispatch = bind(this, dispatch)
   this.scrollHandler  =  bind(this, scrollHandler)
   this.req = false
-  this.queue = raf
+  this.running = false
+  this.raf = false;
   this.listeners = []
+  
 }
 emitter(spy)
 spy.start = function(delay) {
+  if (this.running) this.stop();
   this.queue = delay === undefined ? bind(null, raf) : function(fn) { return setTimeout(fn, delay) } 
   event.bind(this.el, 'scroll', this.scrollHandler)
+  this.running = true
   return this
 }
 
 spy.stop = function() {
+  this.running = false
   event.unbind(this.el, 'scroll', this.scrollHandler)
   if (this.req !== false)
     raf.cancel(this.req)
@@ -69,6 +75,7 @@ handler.end = function() {
   return this.spy
 }
 
+
 handler.enter = enter 
 handler.leave = leave
 
@@ -76,8 +83,15 @@ handler.leave = leave
 /*!
  * utility functions
  */ 
-function scrollHandler(e) {
-  if (this.req === false) this.req = this.queue(this.dispatch)
+function scrollHandler() {
+ // console.log('raf', this.raf)
+  if (this.raf === false) this.raf = raf(this.dispatch)
+}
+
+function scrollLoop() {
+  this.raf = raf(this.scrollLoop)
+  if (this.scrolled) 
+    this.dispatch();  
 }
 
 function dispatch() {
@@ -87,59 +101,56 @@ function dispatch() {
     , offsetTop = 0
     , offsetLeft = 0
     , doc = this.doc
-  this.req = false
   
   for(var i = 0; i < length; i++) {
+    
     var listener = this.listeners[i]
       , coords = offset(listener.el)
-
-    if (!listener.fixed_top && coords.top <= listener.topOffset) {
-      listener.fixed_top = true
+      , exec_enter = false
+      , exec_leave = false
+      
+    //console.log('dispatch!', coords.top, listener.topOffset)
+    if (!listener.is_top && coords.top <= listener.topOffset) {
+      listener.is_top = true
       listener.scrollY = scrollY
-      listener.emit('enter:top', listener.el)
-      listener.emit('enter', listener.el)
-    } else if (listener.fixed_top && scrollY < listener.scrollY) {
-      listener.fixed_top = false
-      listener.emit('leave:top', listener.el)
-      listener.emit('leave')
+      exec_enter = true
+    } else if (listener.is_top && scrollY < listener.scrollY) {
+      listener.is_top = false
+      exec_leave = true
     }
 
     if (listener.leftOffset !== undefined) {
-      if (!listener.fixed_left && coords.left <= listener.leftOffset) {
-        listener.fixed_left = true
+      if (!listener.is_left && coords.left <= listener.leftOffset) {
+        listener.is_left = true
         listener.scrollX = scrollX
-        listener.emit('enter:left', listener.el)
-        listener.emit('enter', listener.el)
-      } else if (listener.fixed_left && scrollX < listener.scrollX) {
-        listener.fixed_left = false
-        listener.emit('leave:left', listener.el)
-        listener.emit('leave', listener.el)
+        exec_enter = true
+      } else if (listener.is_left && scrollX < listener.scrollX) {
+        listener.is_left = false
+        exec_leave = true
       }
     } 
-  
+
+    exec(listener, exec_enter, exec_leave)
+
   }
+  this.raf = false
+}
+
+function exec(listener, enter, leave) {
+  immediate(function(){
+    if (enter && listener.enter_) listener.enter_.call(listener.el, listener.is_top, listener.is_left)
+    if (leave && listener.leave_) listener.leave_.call(listener.el, listener.is_left, listener.is_left)  
+  })
+  
 }
 
 function enter(fn) {
-  if (this.enter_) {
-    this.off('enter', this.enter_)
-    this.off('enter', this.enter_)
-  }
-
   this.enter_ = fn
-  this.on('enter', fn)
-  this.on('enter', fn)
   return this
 }
 
 function leave(fn) {
-  if (this.leave_) {
-    this.off('leave', this.leave_)
-    this.off('leave', this.leave_)
-  }
   this.leave_ = fn
-  this.on('leave', fn)
-  this.on('leave', fn)
   return this
 }
 
