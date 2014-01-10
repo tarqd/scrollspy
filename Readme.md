@@ -12,8 +12,8 @@
 ```javascript
 var spy = require('scrollspy')(window);
   spy
-    .enter(/* handle the element being scrolled past the top of the page (offset <= 0) */)
-    .leave(/* handle the element being scrolled before the top of the page (offset > 0)*/ )
+    .enter(/* called when the element reaches the desired offset (default is the top of the page) */)
+    .leave(/* called when the user scrolls back to the position where `enter` was called */ )
     .start() 
     .add(document.getElementById("nav")) /* defaults to listening for when the element is at the top of the page (topOffset: 0)*/
 ```
