@@ -18,25 +18,8 @@
 		left: 0px;
 	}
 	</style>
-	<script>
-		function start(){
-			console.log('start!')
-			var nav = document.getElementById("nav")
-			var spy = require('scrollspy')(window)
-			spy
-				.add(nav, 0)
-				.enter(function() {
-					console.log('in enter')
-					nav.setAttribute('class', 'fixed')
-				})
-				.leave(function(){
-					nav.setAttribute('class', '')
-				}).end()
-				.start()
+	<script src="example.js"></script>
 
-
-		}
-	</script>
 	</head>
 	<body onload="start();">
 		<div id="nav">Scroll and I will float!</div>
