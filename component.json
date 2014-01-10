@@ -9,7 +9,7 @@
     "component/event": "*",
     "component/raf": "*",
     "component/bind": "*",
-    "ilsken/immediate": "*"
+    "johntron/asap": "*"
   },
   "development": {},
   "license": "MIT",
