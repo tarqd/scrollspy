@@ -8,9 +8,16 @@
 
     $ component install ilsken/scrollspy
 
+## Example
+```javascript
+var spy = require('scrollspy')(window);
+  spy
+    .enter(/* handle the element being scrolled past the top of the page (offset <= 0) */)
+    .leave(/* handle the element being scrolled before the top of the page (offset > 0)*/ )
+    .start() 
+    .add(nav) /* defaults to listening for when the element is at the top of the page (topOffset: 0)
+```
 ## API
-
-
 
 # ScrollSpy()
 
