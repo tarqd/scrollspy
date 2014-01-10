@@ -10,12 +10,20 @@
 
 ## Example
 ```javascript
-var spy = require('scrollspy')(window);
-  spy
-    .enter(/* called when the element reaches the desired offset (default is the top of the page) */)
-    .leave(/* called when the user scrolls back to the position where `enter` was called */ )
-    .start() 
-    .add(document.getElementById("nav")) /* defaults to listening for when the element is at the top of the page (topOffset: 0)*/
+// Make the navigation bar stick to the top of the page when the user scrolls past it
+var nav = document.getElementById("nav")
+var spy = require('scrollspy')(window)
+spy
+  .enter(setClass('fixed'))
+  .leave(setClass(''))
+  .start()
+  .add(nav) // default listens for topOffset: 0 (reaches top of the target element or window)
+
+function setClass(value) {
+  return function () {
+    this.setAttribute('class', value);
+  }
+}
 ```
 ## API
 
