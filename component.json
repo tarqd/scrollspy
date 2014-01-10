@@ -2,7 +2,7 @@
   "name": "scrollspy",
   "repo": "ilsken/scrollspy",
   "description": "Execute callbacks once an element on been scrolled past",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [],
   "dependencies": {
     "anthonyshort/offset": "*",
