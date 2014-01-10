@@ -32,6 +32,11 @@ function ScrollSpy(element) {
   this.listeners = [];
 }
 
+/**
+ * Start listening for scroll events
+ *
+ * @return {ScrollySpy} self for chaining
+ */
 exports.prototype.start = function () {
   if (this.running) this.stop();
   event.bind(this.el, 'scroll', this.scrollHandler);
@@ -39,6 +44,11 @@ exports.prototype.start = function () {
   return this;
 };
 
+/**
+ * Stop listening for scroll events
+ *
+ * @return {ScrollSpy} self for chaining
+ */
 exports.prototype.stop = function () {
   this.running = false;
   event.unbind(this.el, 'scroll', this.scrollHandler);
@@ -46,23 +56,72 @@ exports.prototype.stop = function () {
   return this;
 };
 
+/**
+ * Add `ScrollHandler` for an element.
+ *
+ * @param {HTMLElement} element Element you want to react to scroll events
+ * @param {Number} topOffset Offset from top to trigger the enter event (default is `0`)
+ * @param {Number} leftOffset Offset from the left that you wish to trigger the enter event (default is `undefined` (ignore left offset))
+ * @return {ScrollHandler} Handler object
+ */
 exports.prototype.add = function (element, topOffset, leftOffset) {
   var handler = new ScrollHandler(this, element, topOffset, leftOffset);
   this.listeners.push(handler);
   return handler;
 };
 
+/**
+ * Remove a scroll handler.
+ *
+ * You can either pass the `ScrollHandler` returned by `ScrollSpy#add` or an HTMLElement
+ * If you pass an HTML element all listeners for that element will be removed
+ * If you pass a top or left offset, only listeners matching that element and offset will be removed
+ *
+ * @param {ScrollHandler|HTMLElement} element Scroll handler to remove or an HTMLElement
+ * @param {Remove by topOffset} topOffset Remove by top offset
+ * @param {Number} leftOffset Remove by left offset
+ * @return {ScrollSpy} self for chaining
+ */
 exports.prototype.remove = function (element, topOffset, leftOffset) {
   this.listeners = this.listeners.filter(function (listener) {
-    return (element === undefined || listener.el === element) && (
+    return element === listener || ((element === undefined || listener.el === element) && (
       topOffset === undefined || topOffset === listener.topOffset) &&
-      (leftOffset === undefined || leftOffset === listener.leftOffset);
+      (leftOffset === undefined || leftOffset === listener.leftOffset));
   });
   return this;
 };
+
+/***
+ * Set a default enter handler
+ * 
+ * Called when an element has scrolled into the location specified by either of it's offsets
+ * Must be in the form of `function handler(is_at_top_offset, is_at_left_offset)`. 
+ *
+ * @param {Function} handler 
+ * @return {ScrollSpy} self for chaining
+ */
 exports.prototype.enter = enter;
+
+
+/***
+ * Set a default leave handler
+ * 
+ * Called when an element has left the location specified by either of it's offsets
+ * Must be in the form of `function handler(is_at_top_offset, is_at_left_offset)`. 
+ *
+ * @param {Function} handler 
+ * @return {ScrollSpy} self for chaining
+ */
 exports.prototype.leave = leave;
 
+/**
+ * ScrollHandler
+ *
+ * @param {ScrollSpy} spy
+ * @param {HTMLElement} element
+ * @param {Number} topOffset
+ * @param {Number} leftOffset
+ */
 function ScrollHandler(spy, element, topOffset, leftOffset) {
   this.el = element;
   this.spy = spy;
@@ -70,6 +129,13 @@ function ScrollHandler(spy, element, topOffset, leftOffset) {
   this.leftOffset = leftOffset || undefined;
 }
 
+/**
+ * Gets or sets the offset for this handler
+ *
+ * @param {Number} topOffset
+ * @param {Number} leftOffset
+ * @return {ScrollHandler} self for chaining
+ */
 ScrollHandler.prototype.offset = function (topOffset, leftOffset) {
   if (arguments.length === 0) return {
     top: this.topOffset,
@@ -82,10 +148,36 @@ ScrollHandler.prototype.offset = function (topOffset, leftOffset) {
   return this;
 };
 
+/**
+ * Gets the parent `ScrollSpy` instance
+ *
+ * @return {ScrollSpy} parent `ScrollSpy` instance
+ */
 ScrollHandler.prototype.end = function () {
   return this.spy;
 };
-ScrollHandler.prototype.enter = enter;
+
+/***
+ * Set the enter handler
+ * 
+ * Called when an element has scrolled into the location specified by either of it's offsets
+ * Must be in the form of `function handler(is_at_top_offset, is_at_left_offset)`. 
+ *
+ * @param {Function} handler 
+ * @return {ScrollSpy} self for chaining
+ */
+Handler.prototype.enter = enter;
+
+/***
+ * Set the leave handler
+ * 
+ * Called when an element has left the location specified by either of it's offsets
+ * Must be in the form of `function handler(is_at_top_offset, is_at_left_offset)`. 
+ *
+ * @param {Function} handler 
+ * @return {ScrollSpy} self for chaining
+ */
+
 ScrollHandler.prototype.leave = leave;
 /*!
  * utility functions
