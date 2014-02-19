@@ -166,7 +166,7 @@ ScrollHandler.prototype.end = function () {
  * @param {Function} handler 
  * @return {ScrollSpy} self for chaining
  */
-Handler.prototype.enter = enter;
+ScrollHandler.prototype.enter = enter;
 
 /***
  * Set the leave handler
